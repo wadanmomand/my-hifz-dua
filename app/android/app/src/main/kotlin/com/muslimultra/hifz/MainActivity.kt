@@ -1,4 +1,4 @@
-package com.muslimultra.salah
+package com.muslimultra.hifz
 
 import io.flutter.embedding.android.FlutterActivity
 

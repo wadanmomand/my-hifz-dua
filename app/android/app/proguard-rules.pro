@@ -1,0 +1,5 @@
+-keep class androidx.work.** { *; }
+-keep class androidx.room.** { *; }
+-keep class **_Impl { *; }
+-dontwarn androidx.work.**
+-dontwarn androidx.room.**

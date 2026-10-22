@@ -14,6 +14,7 @@ class DuaState {
 
   Future<void> init() async {
     if (_inMemory) return;
+    await Hive.initFlutter();
     _box = await Hive.openBox(_boxName);
   }
 
