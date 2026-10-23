@@ -11,6 +11,7 @@ void main() {
     final state = DuaState.test();
     await tester.pumpWidget(MyHifzDuasApp(state: state, duas: duas));
     await tester.pump();
-    expect(find.text('My Hifz Duas'), findsWidgets);
+    // Title is now the golden 3D bubble text (approved design).
+    expect(find.text('MY HIFZ DUAS'), findsWidgets);
   });
 }
