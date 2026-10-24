@@ -151,7 +151,6 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
                   ),
                 ),
                 const Spacer(),
-                const HaathiImage(height: 110),
               ],
             ),
           ),
@@ -352,11 +351,6 @@ class ParentDashboardScreen extends StatelessWidget {
                         }
                       },
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Align(
-                    alignment: Alignment.bottomRight,
-                    child: HaathiImage(height: 90),
                   ),
                 ],
               ),

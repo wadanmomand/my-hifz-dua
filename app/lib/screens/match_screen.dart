@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../engine/dua_models.dart';
 import '../engine/dua_state.dart';
@@ -10,11 +11,14 @@ import '../engine/sfx.dart';
 import '../l10n/strings.dart';
 import '../widgets/hifz_3d.dart';
 
-/// Match mode — approved dark-teal 3D design (2026-10-13):
-/// pill header (title + Moves + Pairs), purple glossy star cards,
-/// golden Arabic / teal meaning faces, green matched faces,
-/// Haathi + "Matched! +10" banner. Logic unchanged: memory pairs,
-/// Arabic card ↔ meaning card, stars on finish.
+/// Match mode built on the APPROVED design image (2026-10-13,
+/// screenshot-03, 1008x2128) as a full-bleed background.
+/// The baked Haathi stays visible; the live header covers the baked
+/// header (slightly larger, fully opaque), the live grid sits on an
+/// opaque teal backing over the baked cards, and the live banner slot
+/// covers the baked banner (teal when idle, green on a match).
+/// Logic unchanged: memory pairs, Arabic card ↔ meaning card,
+/// stars on finish. Grid is 4 columns in both modes, like the design.
 class MatchScreen extends StatefulWidget {
   final DuaState state;
   final List<DuaItem> duas;
@@ -101,139 +105,184 @@ class _MatchScreenState extends State<MatchScreen> {
   @override
   Widget build(BuildContext context) {
     final s = KidsStrings(widget.lang);
-    final cols = widget.hard ? 4 : 3;
-    return Scaffold(
-      body: HifzBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+    final size = MediaQuery.sizeOf(context);
+    final w = size.width;
+    final h = size.height;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0E4A4F),
+        body: Stack(
+          children: [
+            // Approved design image, full-bleed.
+            Positioned.fill(
+              child: Image.asset(
+                'assets/screens/match_bg.jpg',
+                fit: BoxFit.fill,
+                errorBuilder: (_, __, ___) =>
+                    Container(color: const Color(0xFF0E4A4F)),
+              ),
+            ),
+            // Live header covering the baked header pill.
+            Positioned(
+              left: w * .025,
+              top: h * .015,
+              width: w * (.975 - .025),
+              height: h * (.155 - .015),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF5ED8C8), Color(0xFF1FA89A)],
+                  ),
+                  borderRadius: BorderRadius.circular(60),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 3)),
+                  ],
+                ),
                 child: Row(
                   children: [
-                    RoundIconButton(
-                      icon: Icons.arrow_back_ios_new,
-                      size: 48,
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    const SizedBox(width: 10),
                     Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF5ED8C8), HifzColors.tealDark],
-                          ),
-                          borderRadius: BorderRadius.circular(999),
-                          boxShadow: const [
-                            BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 6,
-                                offset: Offset(0, 3)),
-                          ],
-                        ),
-                        child: Text(
-                          '${s.get('matchGame').toUpperCase()} ${widget.hard ? s.get('hard').toUpperCase() : s.get('easy').toUpperCase()}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900),
-                        ),
+                      child: Text(
+                        '${s.get('matchGame').toUpperCase()} ${widget.hard ? s.get('hard').toUpperCase() : s.get('easy').toUpperCase()}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    HifzChip(
+                      color: HifzColors.tealPale,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.sports_esports,
+                              color: HifzColors.tealDark, size: 18),
+                          const SizedBox(width: 4),
+                          Text('${s.get('moves')} ${_game.moves}'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    HifzChip(
+                      color: const Color(0xFFDFF5D0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.extension,
+                              color: Colors.green, size: 18),
+                          const SizedBox(width: 4),
+                          Text(
+                              '${s.get('pairs')} ${_game.matches}/${_game.totalPairs}'),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: HifzChip(
-                        color: HifzColors.tealPale,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.sports_esports,
-                                color: HifzColors.tealDark, size: 18),
-                            const SizedBox(width: 6),
-                            Text('${s.get('moves')} ${_game.moves}'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: HifzChip(
-                        color: const Color(0xFFDFF5D0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.extension,
-                                color: Colors.green, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                                '${s.get('pairs')} ${_game.matches}/${_game.totalPairs}'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+            ),
+            // Opaque teal backing over the baked cards.
+            Positioned(
+              left: w * .040,
+              top: h * .148,
+              width: w * (.962 - .040),
+              height: h * (.758 - .148),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF0B4F5E), Color(0xFF1A8A80)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              Expanded(
-                child: _done ? _resultCard(s) : _board(cols),
+            ),
+            // Live grid (4 columns, like the design) or result card.
+            Positioned(
+              left: w * .050,
+              top: h * .158,
+              width: w * (.952 - .050),
+              height: h * (.748 - .158),
+              child: _done ? _resultCard(s) : _board(),
+            ),
+            // Back button (empty teal area, bottom-left of Haathi).
+            Positioned(
+              left: w * .030,
+              top: h * .800,
+              width: 52,
+              height: 52,
+              child: RoundIconButton(
+                icon: Icons.arrow_back,
+                size: 52,
+                onPressed: () => Navigator.pop(context),
               ),
-              if (_showMatched && !_done)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFB7E4A0),
-                    borderRadius: BorderRadius.circular(999),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 6,
-                          offset: Offset(0, 3)),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.star, color: Colors.green, size: 20),
-                      SizedBox(width: 6),
-                      Text('Matched! +10',
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900)),
-                    ],
-                  ),
-                )
-              else
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12),
-                  child: HaathiImage(height: 84),
-                ),
-            ],
-          ),
+            ),
+            // Banner slot covering the baked banner.
+            Positioned(
+              left: w * .205,
+              top: h * .918,
+              width: w * (.800 - .205),
+              height: h * (.994 - .918),
+              child: _showMatched && !_done
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFB7E4A0),
+                        borderRadius: BorderRadius.circular(999),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 3)),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star, color: Colors.green, size: 20),
+                          SizedBox(width: 6),
+                          Text('Matched! +10',
+                              style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w900)),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFF3FD8C8), Color(0xFF1FA89A)],
+                        ),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _board(int cols) {
+  Widget _board() {
     return GridView.builder(
-      padding: const EdgeInsets.all(14),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: cols,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.8,
+      padding: const EdgeInsets.all(4),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.75,
       ),
       itemCount: _game.deck.length,
       itemBuilder: (_, i) => _card(_game.deck[i], i),
@@ -335,7 +384,6 @@ class _MatchScreenState extends State<MatchScreen> {
   Widget _resultCard(KidsStrings s) {
     return Center(
       child: Container(
-        margin: const EdgeInsets.all(32),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           color: Colors.white,
