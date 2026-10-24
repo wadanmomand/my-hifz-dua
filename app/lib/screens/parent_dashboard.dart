@@ -33,14 +33,36 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
     _a = 4 + r.nextInt(6);
     _b = 3 + r.nextInt(6);
     final correct = _a + _b;
-    final set = {correct};
-    while (set.length < 4) {
-      set.add(correct + r.nextInt(7) - 3);
+    // Build 3 distinct distractors, then VERIFY the result:
+    // exactly 4 distinct options, correct answer always present.
+    // If verification ever fails, regenerate; final fallback is a
+    // fixed valid set (correct >= 7, so correct - 2 is always > 0).
+    // This guards the gate against ever showing an unsolvable
+    // question (reported once on device 2026-10-24: 1,1,1,1).
+    List<int> build() {
+      final distractors = <int>{};
+      while (distractors.length < 3) {
+        final d = correct + r.nextInt(7) - 3;
+        if (d > 0 && d != correct) distractors.add(d);
+      }
+      return [...distractors, correct]..shuffle(r);
     }
-    _options = set.where((v) => v > 0).toList()..shuffle(r);
-    while (_options.length < 4) {
-      _options.add(correct + _options.length + 1);
+
+    var options = build();
+    var guard = 0;
+    while ((options.length != 4 ||
+            options.toSet().length != 4 ||
+            !options.contains(correct)) &&
+        guard < 10) {
+      options = build();
+      guard++;
     }
+    if (options.length != 4 ||
+        options.toSet().length != 4 ||
+        !options.contains(correct)) {
+      options = [correct - 2, correct - 1, correct, correct + 1]..shuffle(r);
+    }
+    _options = options;
   }
 
   @override
