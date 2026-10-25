@@ -30,4 +30,20 @@ void main() {
       expect(options, contains('$correct'));
     }
   });
+
+  testWidgets('gate option labels are wrapped against clipping',
+      (tester) async {
+    // Regression test for the 2026-10-25 emulator finding: option
+    // buttons showed only "1" because a fixed 96px width + fontSize 28
+    // clipped the second digit. Every option label must sit inside a
+    // scale-down FittedBox so the full number always renders.
+    final state = DuaState.test();
+    await tester.pumpWidget(MaterialApp(
+      home: ParentGateScreen(state: state, lang: KidsLang.en),
+    ));
+    await tester.pump();
+    final fitted = tester.widgetList<FittedBox>(find.byType(FittedBox));
+    expect(fitted.length, 4);
+    expect(fitted.every((f) => f.fit == BoxFit.scaleDown), isTrue);
+  });
 }

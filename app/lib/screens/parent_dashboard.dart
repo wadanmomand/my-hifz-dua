@@ -119,43 +119,62 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
                               fontSize: 44,
                               fontWeight: FontWeight.w900)),
                       const SizedBox(height: 24),
-                      Wrap(
-                        spacing: 16,
-                        runSpacing: 16,
-                        alignment: WrapAlignment.center,
-                        children: _options
-                            .map((o) => SizedBox(
-                                  width: 96,
-                                  height: 64,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: HifzColors.gold,
-                                        foregroundColor: HifzColors.ink,
-                                        textStyle: const TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w900),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(18))),
-                                    onPressed: () {
-                                      if (o == _a + _b) {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    ParentDashboardScreen(
-                                                        state: widget.state,
-                                                        lang: widget.lang,
-                                                        content:
-                                                            widget.content)));
-                                      } else {
-                                        setState(_newQuestion);
-                                      }
-                                    },
-                                    child: Text('$o'),
-                                  ),
-                                ))
-                            .toList(),
+                      // Buttons sized from the available width so two
+                      // always fit per row on any screen, and each label
+                      // wrapped in a scale-down FittedBox so a two-digit
+                      // number can NEVER clip to its first digit (the
+                      // 2026-10-24/25 "1,1,1,1" reports: the values were
+                      // correct, the display clipped them).
+                      LayoutBuilder(
+                        builder: (_, constraints) {
+                          final bw = (constraints.maxWidth - 16) / 2;
+                          return Wrap(
+                            spacing: 16,
+                            runSpacing: 16,
+                            alignment: WrapAlignment.center,
+                            children: _options
+                                .map((o) => SizedBox(
+                                      width: bw,
+                                      height: 64,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: HifzColors.gold,
+                                            foregroundColor: HifzColors.ink,
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 8),
+                                            textStyle: const TextStyle(
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.w900),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        18))),
+                                        onPressed: () {
+                                          if (o == _a + _b) {
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        ParentDashboardScreen(
+                                                            state:
+                                                                widget.state,
+                                                            lang: widget.lang,
+                                                            content: widget
+                                                                .content)));
+                                          } else {
+                                            setState(_newQuestion);
+                                          }
+                                        },
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text('$o'),
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                          );
+                        },
                       ),
                     ],
                   ),
