@@ -8,11 +8,11 @@ import 'package:my_hifz_duas/l10n/strings.dart';
 
 void main() {
   group('DuaLoader', () {
-    test('loads 10 valid duas from bundled JSON', () {
+    test('loads 30 valid duas from bundled JSON', () {
       final raw =
           File('assets/duas/duas.json').readAsStringSync();
       final duas = DuaLoader.loadFromJsonString(raw);
-      expect(duas.length, 10);
+      expect(duas.length, 30);
       expect(duas.first.id, 'bismillah');
       expect(duas.first.source, contains('Quran'));
     });

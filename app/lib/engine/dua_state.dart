@@ -1,7 +1,15 @@
+import 'dart:convert';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
-/// On-device persistence: XP, stars, streak, learned duas, match stats.
+/// On-device persistence: XP, stars, streak, learned duas, match stats,
+/// and the Hifz Tracker (per-item status for duas, hadith and surahs).
 class DuaState {
+  /// Tracker statuses: 0 = new, 1 = learning, 2 = memorized.
+  static const int statusNew = 0;
+  static const int statusLearning = 1;
+  static const int statusMemorized = 2;
+
   static const _boxName = 'hifz_duas';
   Box? _box;
   final bool _inMemory;
@@ -55,7 +63,52 @@ class DuaState {
       list.add(duaId);
       await _put('learnedDuas', list);
     }
+    await markMemorized(duaId);
   }
+
+  /// Tracker: itemId -> status, stored as a JSON string (Hive maps
+  /// do not round-trip typed keys reliably).
+  Map<String, int> get itemStatus {
+    final raw = _get('itemStatusJson', '');
+    if (raw.isEmpty) return {};
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    return decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
+  }
+
+  /// Effective status: legacy learnedDuas entries count as memorized,
+  /// so users who memorized duas before the tracker keep their progress.
+  int statusOf(String id) {
+    if (learnedDuas.contains(id)) return statusMemorized;
+    return itemStatus[id] ?? statusNew;
+  }
+
+  Future<void> markLearning(String id) async {
+    if (statusOf(id) != statusMemorized) {
+      final m = itemStatus;
+      m[id] = statusLearning;
+      await _put('itemStatusJson', jsonEncode(m));
+    }
+  }
+
+  Future<void> markMemorized(String id) async {
+    final m = itemStatus;
+    m[id] = statusMemorized;
+    await _put('itemStatusJson', jsonEncode(m));
+  }
+
+  Future<void> unmarkMemorized(String id) async {
+    final m = itemStatus;
+    m[id] = statusLearning;
+    await _put('itemStatusJson', jsonEncode(m));
+    final list = learnedDuas;
+    if (list.remove(id)) await _put('learnedDuas', list);
+  }
+
+  int memorizedCount(List<String> ids) =>
+      ids.where((id) => statusOf(id) == statusMemorized).length;
+
+  int learningCount(List<String> ids) =>
+      ids.where((id) => statusOf(id) == statusLearning).length;
 
   Future<void> touchDay() async {
     final today = DateTime.now().toIso8601String().substring(0, 10);
@@ -80,5 +133,6 @@ class DuaState {
     await _put('bestEasy', 0);
     await _put('bestHard', 0);
     await _put('learnedDuas', <String>[]);
+    await _put('itemStatusJson', '');
   }
 }

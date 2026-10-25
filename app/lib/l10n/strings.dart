@@ -412,6 +412,56 @@ class KidsStrings {
       KidsLang.ur: 'روزانہ کہانی کی یاددہانی',
       KidsLang.ar: 'تذكير يومي بالقصة',
     },
+    'tracker': {
+      KidsLang.en: 'Hifz Tracker',
+      KidsLang.ur: 'حفظ ٹریکر',
+      KidsLang.ar: 'متتبع الحفظ',
+    },
+    'library': {
+      KidsLang.en: 'Library',
+      KidsLang.ur: 'لائبریری',
+      KidsLang.ar: 'المكتبة',
+    },
+    'hadith': {
+      KidsLang.en: 'Hadith',
+      KidsLang.ur: 'حدیث',
+      KidsLang.ar: 'الحديث',
+    },
+    'surahs': {
+      KidsLang.en: 'Surahs',
+      KidsLang.ur: 'سورتیں',
+      KidsLang.ar: 'السور',
+    },
+    'namaz': {
+      KidsLang.en: 'Namaz',
+      KidsLang.ur: 'نماز',
+      KidsLang.ar: 'الصلاة',
+    },
+    'learning': {
+      KidsLang.en: 'Learning',
+      KidsLang.ur: 'سیکھ رہے ہیں',
+      KidsLang.ar: 'قيد التعلم',
+    },
+    'memorized': {
+      KidsLang.en: 'Memorized',
+      KidsLang.ur: 'یاد ہو گیا',
+      KidsLang.ar: 'محفوظ',
+    },
+    'overallProgress': {
+      KidsLang.en: 'Overall Progress',
+      KidsLang.ur: 'مجموعی پیش رفت',
+      KidsLang.ar: 'التقدم العام',
+    },
+    'wuduSteps': {
+      KidsLang.en: 'Wudu Steps',
+      KidsLang.ur: 'وضو کے مراحل',
+      KidsLang.ar: 'خطوات الوضوء',
+    },
+    'salahSteps': {
+      KidsLang.en: 'Salah Steps',
+      KidsLang.ur: 'نماز کے مراحل',
+      KidsLang.ar: 'خطوات الصلاة',
+    },
   };
 
   String get(String key) => _t[key]?[lang] ?? _t[key]?[KidsLang.en] ?? key;

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../engine/dua_state.dart';
+import '../engine/learn_content.dart';
 import '../l10n/strings.dart';
 import '../widgets/hifz_3d.dart';
 
@@ -11,7 +12,14 @@ import '../widgets/hifz_3d.dart';
 class ParentGateScreen extends StatefulWidget {
   final DuaState state;
   final KidsLang lang;
-  const ParentGateScreen({super.key, required this.state, this.lang = KidsLang.en});
+
+  /// Optional: when provided, the dashboard shows the Hifz Tracker report.
+  final AppContent? content;
+  const ParentGateScreen(
+      {super.key,
+      required this.state,
+      this.lang = KidsLang.en,
+      this.content});
 
   @override
   State<ParentGateScreen> createState() => _ParentGateScreenState();
@@ -137,7 +145,9 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
                                                 builder: (_) =>
                                                     ParentDashboardScreen(
                                                         state: widget.state,
-                                                        lang: widget.lang)));
+                                                        lang: widget.lang,
+                                                        content:
+                                                            widget.content)));
                                       } else {
                                         setState(_newQuestion);
                                       }
@@ -166,8 +176,14 @@ class _ParentGateScreenState extends State<ParentGateScreen> {
 class ParentDashboardScreen extends StatelessWidget {
   final DuaState state;
   final KidsLang lang;
+
+  /// Optional: when provided, shows the Hifz Tracker report card.
+  final AppContent? content;
   const ParentDashboardScreen(
-      {super.key, required this.state, this.lang = KidsLang.en});
+      {super.key,
+      required this.state,
+      this.lang = KidsLang.en,
+      this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +257,7 @@ class ParentDashboardScreen extends StatelessWidget {
                                       color: HifzColors.ink,
                                       fontWeight: FontWeight.w900)),
                             ),
-                            Text('${state.learnedDuas.length} / 10',
+                            Text('${state.learnedDuas.length} / ${content?.duas.length ?? 10}',
                                 style: const TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w700)),
@@ -253,7 +269,8 @@ class ParentDashboardScreen extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: state.learnedDuas.isEmpty
                                 ? 0
-                                : state.learnedDuas.length / 10,
+                                : state.learnedDuas.length /
+                                    (content?.duas.length ?? 10),
                             minHeight: 10,
                             backgroundColor: Colors.grey[200],
                             valueColor: const AlwaysStoppedAnimation(
@@ -270,6 +287,8 @@ class ParentDashboardScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  if (content != null) _trackerCard(s, content!),
+                  if (content != null) const SizedBox(height: 12),
                   _whiteCard(
                     Row(
                       children: [
@@ -398,6 +417,67 @@ class ParentDashboardScreen extends StatelessWidget {
                   fontSize: 11,
                   color: Colors.grey,
                   fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
+  }
+
+  Widget _trackerCard(KidsStrings s, AppContent c) {
+    final duaIds = c.duas.map((d) => d.id).toList();
+    final hadithIds = c.hadiths.map((h) => h.id).toList();
+    final surahIds = c.surahs.map((x) => x.id).toList();
+    final allIds = [...duaIds, ...hadithIds, ...surahIds];
+    final memorized = state.memorizedCount(allIds);
+    final total = allIds.length;
+    Widget row(String label, List<String> ids) {
+      final m = state.memorizedCount(ids);
+      final l = state.learningCount(ids);
+      return Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(label,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
+            ),
+            Text('$m ${s.get('memorized').toLowerCase()} · $l '
+                '${s.get('learning').toLowerCase()} / ${ids.length}'),
+          ],
+        ),
+      );
+    }
+
+    return _whiteCard(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(s.get('tracker').toUpperCase(),
+                    style: const TextStyle(
+                        color: HifzColors.ink,
+                        fontWeight: FontWeight.w900)),
+              ),
+              Text('$memorized / $total',
+                  style: const TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: total == 0 ? 0 : memorized / total,
+              minHeight: 10,
+              backgroundColor: Colors.grey[200],
+              valueColor:
+                  const AlwaysStoppedAnimation(HifzColors.tealCard),
+            ),
+          ),
+          row(s.get('learnDuas'), duaIds),
+          row(s.get('hadith'), hadithIds),
+          row(s.get('surahs'), surahIds),
         ],
       ),
     );

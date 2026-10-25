@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 
 import '../engine/dua_models.dart';
 import '../engine/dua_state.dart';
+import '../engine/learn_content.dart';
 import '../l10n/strings.dart';
 import '../widgets/hifz_3d.dart';
 import 'learn_screen.dart';
+import 'library_screen.dart';
 import 'match_screen.dart';
 import 'parent_dashboard.dart';
+import 'tracker_screen.dart';
 
 /// Home screen built on the APPROVED design image (2026-10-13,
 /// screenshot-01, 1008x2128) as a full-bleed background.
@@ -20,9 +23,14 @@ import 'parent_dashboard.dart';
 class DuaHomeScreen extends StatefulWidget {
   final DuaState state;
   final List<DuaItem> duas;
+  final AppContent content;
   final KidsLang lang;
   const DuaHomeScreen(
-      {super.key, required this.state, required this.duas, this.lang = KidsLang.en});
+      {super.key,
+      required this.state,
+      required this.duas,
+      required this.content,
+      this.lang = KidsLang.en});
 
   @override
   State<DuaHomeScreen> createState() => _DuaHomeScreenState();
@@ -55,8 +63,17 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
 
   Future<void> _onMenuSelected(String value) async {
     switch (value) {
+      case 'tracker':
+        await _go(TrackerScreen(
+            state: widget.state, content: widget.content, lang: _lang));
+        break;
+      case 'library':
+        await _go(LibraryScreen(
+            state: widget.state, content: widget.content, lang: _lang));
+        break;
       case 'parents':
-        await _go(ParentGateScreen(state: widget.state, lang: _lang));
+        await _go(ParentGateScreen(
+            state: widget.state, lang: _lang, content: widget.content));
         break;
       case 'language':
         await _showLanguageDialog();
@@ -212,7 +229,10 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
             // Tap zones over baked elements.
             zone(.039, .038, .319, .106, _showLanguageDialog),
             zone(.862, .028, .967, .120,
-                () => _go(ParentGateScreen(state: widget.state, lang: _lang))),
+                () => _go(ParentGateScreen(
+                    state: widget.state,
+                    lang: _lang,
+                    content: widget.content))),
             zone(.046, .477, .486, .800,
                 () => _go(LearnScreen(
                     state: widget.state, duas: widget.duas, lang: _lang))),
@@ -289,6 +309,28 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
                   icon: const Icon(Icons.menu, color: Colors.white),
                   onSelected: _onMenuSelected,
                   itemBuilder: (_) => [
+                    PopupMenuItem(
+                      value: 'tracker',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.track_changes,
+                              color: HifzColors.tealDark),
+                          const SizedBox(width: 8),
+                          Text(s.get('tracker')),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'library',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.library_books,
+                              color: HifzColors.tealDark),
+                          const SizedBox(width: 8),
+                          Text(s.get('library')),
+                        ],
+                      ),
+                    ),
                     PopupMenuItem(
                       value: 'parents',
                       child: Row(

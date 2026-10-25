@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'ads/ads_service.dart';
-import 'engine/dua_loader.dart';
-import 'engine/dua_models.dart';
 import 'engine/dua_state.dart';
+import 'engine/learn_content.dart';
 import 'l10n/strings.dart';
 import 'screens/dua_home.dart';
 import 'theme/app_theme.dart';
@@ -15,14 +14,14 @@ Future<void> main() async {
   final duaState = DuaState();
   await duaState.init();
   await duaState.touchDay();
-  final duas = await DuaLoader.load();
-  runApp(MyHifzDuasApp(state: duaState, duas: duas));
+  final content = await AppContent.load();
+  runApp(MyHifzDuasApp(state: duaState, content: content));
 }
 
 class MyHifzDuasApp extends StatefulWidget {
   final DuaState state;
-  final List<DuaItem> duas;
-  const MyHifzDuasApp({super.key, required this.state, required this.duas});
+  final AppContent content;
+  const MyHifzDuasApp({super.key, required this.state, required this.content});
 
   @override
   State<MyHifzDuasApp> createState() => _MyHifzDuasAppState();
@@ -35,7 +34,10 @@ class _MyHifzDuasAppState extends State<MyHifzDuasApp> {
       title: KidsStrings(KidsLang.en).get('appName'),
       theme: KidsTheme.light,
       debugShowCheckedModeBanner: false,
-      home: DuaHomeScreen(state: widget.state, duas: widget.duas),
+      home: DuaHomeScreen(
+          state: widget.state,
+          duas: widget.content.duas,
+          content: widget.content),
     );
   }
 }

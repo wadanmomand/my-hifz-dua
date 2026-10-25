@@ -51,6 +51,8 @@ class _LearnScreenState extends State<LearnScreen> {
   void _onPage(int i) {
     setState(() => _index = i);
     _narration.stop();
+    // Viewing a dua starts "learning" it in the Hifz Tracker.
+    widget.state.markLearning(widget.duas[i].id);
   }
 
   Future<void> _markLearned(DuaItem dua) async {

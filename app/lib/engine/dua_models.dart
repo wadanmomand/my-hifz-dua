@@ -55,4 +55,15 @@ class DuaItem {
         return meaningEn;
     }
   }
+
+  String titleFor(String lang) {
+    switch (lang) {
+      case 'ur':
+        return titleUr.isNotEmpty ? titleUr : titleEn;
+      case 'ar':
+        return titleAr.isNotEmpty ? titleAr : titleEn;
+      default:
+        return titleEn;
+    }
+  }
 }
