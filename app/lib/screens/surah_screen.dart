@@ -94,13 +94,13 @@ class _SurahScreenState extends State<SurahScreen> {
         c.zone(.066, .044, .201, .104, () => Navigator.pop(context)),
         c.pos(.398, .042, .601, .105,
             mockupLangChip(widget.lang.code.toUpperCase())),
-        c.pos(.748, .029, .927, .119, mockupXpChip(widget.state.xp)),
+        c.pos(.745, .022, .930, .122, mockupXpChip(widget.state.xp)),
         // Live cream card over the baked card.
         c.pos(
-          .073,
-          .338,
-          .930,
-          .763,
+          .070,
+          .333,
+          .933,
+          .768,
           mockupCreamCard(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(22, 18, 22, 16),
@@ -114,18 +114,18 @@ class _SurahScreenState extends State<SurahScreen> {
           ),
         ),
         // Live arrows + gold button over the baked ones.
-        c.pos(.369, .791, .478, .858,
+        c.pos(.365, .786, .482, .863,
             mockupGoldArrow(icon: Icons.arrow_back, onPressed: _index > 0 ? _prev : null)),
-        c.pos(.522, .791, .634, .858,
+        c.pos(.518, .786, .638, .863,
             mockupGoldArrow(
                 icon: Icons.arrow_forward,
                 onPressed:
                     _index < widget.surahs.length - 1 ? _next : null)),
         c.pos(
-          .088,
-          .868,
-          .914,
-          .972,
+          .085,
+          .863,
+          .917,
+          .975,
           mockupGoldButton(
             label: memorized ? s.get('learned') : s.get('markLearned'),
             onPressed: () => _markMemorized(current),

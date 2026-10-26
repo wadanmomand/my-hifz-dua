@@ -95,13 +95,13 @@ class _HadithScreenState extends State<HadithScreen> {
         c.zone(.054, .056, .166, .112, () => Navigator.pop(context)),
         c.pos(.553, .057, .736, .114,
             mockupLangChip(widget.lang.code.toUpperCase())),
-        c.pos(.788, .041, .962, .119, mockupXpChip(widget.state.xp)),
+        c.pos(.785, .033, .965, .122, mockupXpChip(widget.state.xp)),
         // Live cream card over the baked card.
         c.pos(
-          .085,
-          .358,
-          .948,
-          .772,
+          .080,
+          .350,
+          .952,
+          .780,
           mockupCreamCard(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(22, 18, 22, 16),
@@ -115,18 +115,18 @@ class _HadithScreenState extends State<HadithScreen> {
           ),
         ),
         // Live arrows + gold button over the baked ones.
-        c.pos(.312, .797, .444, .863,
+        c.pos(.308, .808, .468, .880,
             mockupGoldArrow(icon: Icons.arrow_back, onPressed: _index > 0 ? _prev : null)),
-        c.pos(.556, .797, .688, .863,
+        c.pos(.562, .808, .718, .880,
             mockupGoldArrow(
                 icon: Icons.arrow_forward,
                 onPressed:
                     _index < widget.hadiths.length - 1 ? _next : null)),
         c.pos(
-          .082,
-          .875,
-          .945,
-          .942,
+          .078,
+          .870,
+          .950,
+          .955,
           mockupGoldButton(
             label: memorized ? s.get('learned') : s.get('markLearned'),
             onPressed: () => _markMemorized(current),

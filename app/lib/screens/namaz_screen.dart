@@ -54,24 +54,25 @@ class _NamazScreenState extends State<NamazScreen> {
       builder: (c) => [
         // Top bar: back + live chips over the baked chips.
         c.zone(.048, .088, .148, .138, () => Navigator.pop(context)),
-        c.pos(.421, .088, .577, .138,
+        c.pos(.415, .085, .583, .141,
             mockupLangChip(widget.lang.code.toUpperCase())),
-        c.pos(.812, .072, .964, .166, mockupXpChip(widget.state.xp)),
-        // Live tabs over the baked tabs.
-        c.pos(.103, .430, .484, .501,
+        c.pos(.805, .065, .970, .170, mockupXpChip(widget.state.xp)),
+        // Live tabs over the baked tabs (phone-measured true baked tabs
+        // .385-.455; live pills slightly larger so nothing peeks out).
+        c.pos(.100, .376, .487, .464,
             _tabPill(s.get('wuduSteps'), _tab == 0, () {
           setState(() => _tab = 0);
         })),
-        c.pos(.511, .430, .901, .502,
+        c.pos(.508, .376, .905, .464,
             _tabPill(s.get('salahSteps'), _tab == 1, () {
           setState(() => _tab = 1);
         })),
         // Live cream card over the baked card: steps list.
         c.pos(
-          .061,
-          .521,
-          .938,
-          .904,
+          .058,
+          .518,
+          .940,
+          .925,
           mockupCreamCard(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),

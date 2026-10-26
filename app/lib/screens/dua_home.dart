@@ -176,21 +176,14 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
           onTap: onTap,
           child: Container(
             decoration: BoxDecoration(
-              gradient: selected
-                  ? LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: gradient)
-                  : null,
-              color: selected
-                  ? null
-                  : Colors.white.withValues(alpha: 0.12),
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: gradient),
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
-                  color: selected
-                      ? Colors.white70
-                      : Colors.white.withValues(alpha: 0.25),
-                  width: 1.5),
+                  color: selected ? Colors.white70 : Colors.white24,
+                  width: selected ? 2.5 : 1.5),
               boxShadow: const [
                 BoxShadow(
                     color: Colors.black38,
@@ -199,12 +192,26 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
               ],
             ),
             alignment: Alignment.center,
-            child: Text(
-              label,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w900),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (!selected)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                Text(
+                  label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900),
+                ),
+              ],
             ),
           ),
         ),
@@ -242,12 +249,13 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
                     duas: widget.duas,
                     hard: _hard,
                     lang: _lang))),
-            // Live XP tile covering the baked "XP 120" badge.
+            // Live XP tile covering the baked badge (top stretched to
+            // cover the baked star tip that peeks above the badge).
             Positioned(
-              left: w * .575,
-              top: h * .050,
-              width: w * (.845 - .575),
-              height: h * (.175 - .050),
+              left: w * .570,
+              top: h * .010,
+              width: w * (.850 - .570),
+              height: h * (.178 - .010),
               child: GestureDetector(
                 onTap: _showProgressDialog,
                 child: Container(
@@ -380,10 +388,14 @@ class _DuaHomeScreenState extends State<DuaHomeScreen> {
               ),
             ),
             // Live Easy / Hard pills covering the baked toggles.
-            pill(.185, .880, .495, .965, s.get('easy').toUpperCase(), !_hard,
+            // Both pills are ALWAYS opaque (their gradient): the old
+            // translucent unselected pill let the baked label show
+            // through next to the live label (double "Hard" text).
+            // Selection is shown by the border, not transparency.
+            pill(.182, .888, .500, .978, s.get('easy').toUpperCase(), !_hard,
                 const [Color(0xFF3FD8C8), Color(0xFF1FA89A)],
                 () => setState(() => _hard = false)),
-            pill(.505, .880, .810, .965, s.get('hard').toUpperCase(), _hard,
+            pill(.510, .888, .812, .978, s.get('hard').toUpperCase(), _hard,
                 const [Color(0xFFF5B301), Color(0xFFE8960F)],
                 () => setState(() => _hard = true)),
           ],

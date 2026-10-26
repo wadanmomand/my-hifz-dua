@@ -32,7 +32,7 @@ class LibraryScreen extends StatelessWidget {
         c.zone(.060, .056, .248, .120, () => Navigator.pop(context)),
         c.pos(.366, .054, .639, .121,
             mockupLangChip(lang.code.toUpperCase())),
-        c.pos(.744, .038, .946, .129, mockupXpChip(state.xp)),
+        c.pos(.740, .030, .950, .132, mockupXpChip(state.xp)),
         // Four baked cards → same destinations as before.
         c.zone(
             .061,

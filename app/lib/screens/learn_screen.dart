@@ -141,12 +141,13 @@ class _LearnScreenState extends State<LearnScreen> {
                     Container(color: const Color(0xFF0E4A4F)),
               ),
             ),
-            // Live card over the baked card (slightly larger, opaque).
+            // Live card over the baked card (true baked card ends ~.71;
+            // the old .786 rect left a cream slab over the dark bg).
             Positioned(
-              left: w * .058,
-              top: h * .209,
-              width: w * (.944 - .058),
-              height: h * (.786 - .209),
+              left: w * .055,
+              top: h * .185,
+              width: w * (.945 - .055),
+              height: h * (.715 - .185),
               child: PageView.builder(
                 controller: _page,
                 onPageChanged: _onPage,
@@ -154,9 +155,10 @@ class _LearnScreenState extends State<LearnScreen> {
                 itemBuilder: (_, i) => _duaCard(widget.duas[i], s),
               ),
             ),
-            // Live arrows over the baked arrows.
-            arrow(.046, .582, .214, .678, Icons.chevron_left, _prev),
-            arrow(.781, .582, .953, .678, Icons.chevron_right, _next),
+            // Live arrows over the baked arrows (true baked arrows
+            // ~.50-.57; the old .582-.678 rect sat below them).
+            arrow(.040, .495, .220, .575, Icons.chevron_left, _prev),
+            arrow(.775, .495, .960, .575, Icons.chevron_right, _next),
             // Bottom-center: back button + counter (empty teal area).
             Positioned(
               left: w * .28,

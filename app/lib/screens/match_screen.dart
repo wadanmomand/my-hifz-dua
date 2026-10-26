@@ -276,16 +276,31 @@ class _MatchScreenState extends State<MatchScreen> {
   }
 
   Widget _board() {
-    return GridView.builder(
+    // Rows of Expanded cards fill the backing exactly on any screen.
+    // (The old GridView with childAspectRatio 0.75 left a wide empty
+    // teal band below the 3 rows on tall phones.)
+    final deck = _game.deck;
+    const cols = 4;
+    final rowCount = (deck.length / cols).ceil();
+    return Padding(
       padding: const EdgeInsets.all(4),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.75,
+      child: Column(
+        children: [
+          for (int r = 0; r < rowCount; r++) ...[
+            if (r > 0) const SizedBox(height: 12),
+            Expanded(
+              child: Row(
+                children: [
+                  for (int c = 0; c < cols; c++) ...[
+                    if (c > 0) const SizedBox(width: 12),
+                    Expanded(child: _card(deck[r * cols + c], r * cols + c)),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
-      itemCount: _game.deck.length,
-      itemBuilder: (_, i) => _card(_game.deck[i], i),
     );
   }
 

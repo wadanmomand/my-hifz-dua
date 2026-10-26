@@ -63,15 +63,17 @@ class TrackerScreen extends StatelessWidget {
         c.zone(.028, .028, .142, .062, () => Navigator.pop(context)),
         c.pos(.413, .024, .583, .064,
             mockupLangChip(lang.code.toUpperCase())),
-        c.pos(.794, .013, .975, .072, mockupXpChip(state.xp)),
+        c.pos(.790, .005, .980, .075, mockupXpChip(state.xp)),
         // Overall progress: live bar + live text over the baked bar/text.
+        // Phone-measured true baked card is .077-.923 x .363-.481; the
+        // strip covers only the bar+text band (title stays baked above).
         c.pos(
-          .090,
-          .458,
-          .910,
-          .548,
+          .088,
+          .413,
+          .912,
+          .482,
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFFF9E9D0),
               borderRadius: BorderRadius.circular(20),
@@ -83,18 +85,18 @@ class TrackerScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                   child: LinearProgressIndicator(
                     value: pct,
-                    minHeight: 16,
+                    minHeight: 10,
                     backgroundColor: const Color(0xFFE8DCC0),
                     valueColor:
                         const AlwaysStoppedAnimation(HifzColors.goldDark),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   '$memorized of $total ${s.get('memorized')}',
                   style: const TextStyle(
                       color: HifzColors.tealDark,
-                      fontSize: 17,
+                      fontSize: 16,
                       fontWeight: FontWeight.w900),
                 ),
               ],
@@ -104,34 +106,34 @@ class TrackerScreen extends StatelessWidget {
         // Category cards: tap zones + live count pills (sampled colors).
         // (Pills carry the tap too: a plain Container would block the
         // zone beneath it, so each pill is its own GestureDetector.)
-        c.zone(.079, .566, .921, .684, openDuas),
+        c.zone(.075, .512, .925, .642, openDuas),
         c.pos(
-            .320,
+            .385,
+            .575,
+            .825,
             .612,
-            .860,
-            .682,
             _countPill(
                 const Color(0xFF10828C),
                 '${duaIds.length} items, $memDuas '
                 '${s.get('memorized')}',
                 openDuas)),
-        c.zone(.079, .701, .921, .819, openHadith),
+        c.zone(.075, .645, .925, .789, openHadith),
         c.pos(
-            .320,
-            .748,
-            .860,
-            .818,
+            .385,
+            .722,
+            .820,
+            .755,
             _countPill(
                 const Color(0xFFF2B63E),
                 '${hadithIds.length} items, $memHadith '
                 '${s.get('memorized')}',
                 openHadith)),
-        c.zone(.079, .834, .921, .944, openSurahs),
+        c.zone(.075, .793, .925, .929, openSurahs),
         c.pos(
-            .320,
-            .882,
-            .860,
-            .952,
+            .385,
+            .870,
+            .835,
+            .904,
             _countPill(
                 const Color(0xFF469752),
                 '${surahIds.length} Surahs, $memSurahs '
